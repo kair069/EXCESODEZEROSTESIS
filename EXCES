@@ -1,0 +1,101 @@
+install.packages("pscl")
+
+library(pscl)
+data(package = "pscl")
+
+library(pscl)
+
+# Cargar el conjunto de datos bioChemists
+data("bioChemists")
+
+# Mostrar las primeras filas del conjunto de datos
+head(bioChemists)
+
+# Verificar si alguna variable tiene un exceso de ceros
+summary(bioChemists)
+
+View(bioChemists)
+
+?bioChemists
+
+hist(bioChemists$art)
+hist(bioChemists$fem)
+hist(bioChemists$mar)
+hist(bioChemists$kid5)
+hist(bioChemists$phd)
+hist(bioChemists$ment)
+
+str(bioChemists)
+
+##
+
+install.packages("pscl")
+library(pscl)
+
+# Supongamos que deseas ajustar un modelo ZI a la variable "art" en tus datos
+# Primero, crea un data frame solo con la variable de interés
+datos_art <- data.frame(bioChemists)
+
+# Ajustar un modelo ZI a los datos
+modelo_zi <- zeroinfl(art ~ ., data = bioChemists, dist = "negbin")
+?zeroinfl
+# Resumen del modelo
+summary(modelo_zi)
+
+mejor_modelo <- stepAIC(modelo_zi, direction = "both")
+
+
+print(summary(mejor_modelo))
+
+
+#mejor modelo
+modelo_zi <- zeroinfl(art ~ fem + mar + kid5 + ment, data = bioChemists, dist = "negbin")
+summary(modelo_zi)
+
+###
+
+
+install.packages("pscl")
+library(pscl)
+
+# Calcula el pseudo-R^2 para el modelo ZI
+pseudo_R2 <- pR2(modelo_zi)
+
+# Calcular el R^2 de McFadden
+pseudo_R2 <- pR2(modelo_zi)
+pseudo_R2["McFadden"]
+
+
+###
+
+# Ajustar el modelo ZI con distribución de Poisson
+modelo_zi_poisson <- zeroinfl(art ~ fem + mar + kid5 + ment, data = bioChemists, dist = "poisson")
+summary(modelo_zi_poisson)
+
+# Instalar y cargar el paquete "pscl"
+
+
+# Calcular el pseudo-R^2 para el modelo ZI con distribución de Poisson
+pseudo_R2_poisson <- pR2(modelo_zi_poisson)
+
+# Mostrar el R^2 de McFadden
+pseudo_R2_poisson["McFadden"]
+
+
+##
+# Ajustar el modelo Hurdle a tus datos
+modelo_hurdle <- hurdle(art ~ fem + mar + kid5 + ment, data = bioChemists, dist = "negbin")
+
+# Resumen del modelo
+summary(modelo_hurdle)
+
+bioChemists$fem <- as.numeric(bioChemists$fem) - 1  # Suponiendo que "Men" es 0 y "Women" es 1
+bioChemists$mar <- as.numeric(bioChemists$mar) - 1  # Suponiendo que "Single" es 0 y "Married" es 1
+
+
+modelo_nb_cuadratico <- zeroinfl(art ~ fem + mar + kid5 + ment + I(fem^2) + I(mar^2) + I(kid5^2) + I(ment^2), 
+                                 data = bioChemists, dist = "negbin")
+
+
+# Resumen del modelo binomial negativo cuadrático
+summary(modelo_nb_cuadratico)
